@@ -1,6 +1,6 @@
 {
   "name": "com.kruty1918.gameplay-viewport",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "displayName": "Gameplay Viewport",
   "description": "Adaptive gameplay framing and opt-in world composition for phones, tablets, desktop windows and console displays. Orthographic and perspective cameras, safe areas, split-screen, UI reservations and world anchors.",
   "unity": "6000.0",

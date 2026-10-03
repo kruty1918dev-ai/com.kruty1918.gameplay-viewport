@@ -62,6 +62,58 @@ namespace Kruty1918.GameplayViewport.Tests
             }
             finally{Object.Destroy(actor);Object.Destroy(root);}yield return null;
         }
+        [UnityTest] public IEnumerator VisualSizingTracksProjectionClampsAndRestoresWithoutChangingActor()
+        {
+            var view = new GameObject("sizing camera", typeof(Camera), typeof(GameplayViewport));
+            var camera = view.GetComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = 5;
+            var texture = new RenderTexture(720,1600,16); camera.targetTexture = texture; camera.aspect = 720f/1600;
+            var actor = new GameObject("game actor", typeof(BoxCollider), typeof(ViewportVisualScale));
+            actor.transform.position = new Vector3(0,0,10); var originalPosition = actor.transform.position;
+            var visual = new GameObject("visual"); visual.transform.SetParent(actor.transform, false); visual.transform.localScale = Vector3.one * .2f;
+            var size = actor.GetComponent<ViewportVisualScale>(); size.Viewport = view.GetComponent<GameplayViewport>(); size.Visual = visual.transform;
+            size.ReferenceLocalScale = visual.transform.localScale; size.ReferenceWorldSize = .2f; size.SizeFraction = .05f;
+            size.MinimumMultiplier = .5f; size.MaximumMultiplier = 10;
+            try
+            {
+                yield return Frames(3); Assert.That(visual.transform.localScale.x, Is.EqualTo(.225f).Within(.001));
+                camera.aspect = 2560f/1080; texture.Release(); texture.width = 2560; texture.height = 1080;
+                yield return Frames(3); Assert.That(visual.transform.localScale.x, Is.EqualTo(.5f).Within(.001));
+                camera.orthographic = false; camera.fieldOfView = 60; yield return Frames(3);
+                var nearScale = visual.transform.localScale.x; actor.transform.position += Vector3.forward * 10; yield return Frames(3);
+                Assert.That(visual.transform.localScale.x, Is.EqualTo(nearScale * 2).Within(.001));
+                size.MaximumMultiplier = 1.5f; yield return Frames(3); Assert.That(visual.transform.localScale.x, Is.EqualTo(.3f).Within(.001));
+                var logicalScale = actor.transform.localScale; size.Visual = actor.transform;
+                Assert.IsFalse(size.ApplyNow()); Assert.AreEqual(logicalScale, actor.transform.localScale);
+                size.Visual = visual.transform; size.enabled = false; Assert.AreEqual(Vector3.one * .2f, visual.transform.localScale);
+                Assert.AreEqual(originalPosition + Vector3.forward * 10, actor.transform.position);
+                Assert.AreEqual(Vector3.one, actor.transform.localScale); Assert.AreEqual(Vector3.one, actor.GetComponent<BoxCollider>().size);
+            }
+            finally { camera.targetTexture = null; Object.Destroy(texture); Object.Destroy(actor); Object.Destroy(view); }
+            yield return null;
+        }
+        [UnityTest] public IEnumerator VisualVariantsRespondToRuntimeRootChangesAndRejectUnsafeConfiguration()
+        {
+            var view = new GameObject("variants camera", typeof(Camera), typeof(GameplayViewport));
+            var texture = new RenderTexture(720,1600,16); view.GetComponent<Camera>().targetTexture = texture;
+            var actor = new GameObject("variant owner", typeof(ViewportVisualVariants));
+            var portrait = new GameObject("portrait"); var wide = new GameObject("wide"); var replacement = new GameObject("replacement");
+            var variants = actor.GetComponent<ViewportVisualVariants>(); variants.Viewport = view.GetComponent<GameplayViewport>();
+            variants.Variants = new[] { new ViewportVisualVariants.Variant { Root = portrait, MaximumAspect = 1 }, new ViewportVisualVariants.Variant { Root = wide, MinimumAspect = 1 } };
+            try
+            {
+                yield return Frames(3); Assert.IsTrue(portrait.activeSelf); Assert.IsFalse(wide.activeSelf);
+                // The selected index stays zero, but a runtime reference is replaced and was inactive.
+                replacement.SetActive(false); variants.Variants[0].Root = replacement; yield return Frames(3); Assert.IsTrue(replacement.activeSelf);
+                replacement.SetActive(false); yield return Frames(2); Assert.IsTrue(replacement.activeSelf);
+                texture.Release(); texture.width = 2560; texture.height = 1080; yield return Frames(3);
+                Assert.IsFalse(replacement.activeSelf); Assert.IsTrue(wide.activeSelf);
+                variants.Variants[0].Root = actor; Assert.IsFalse(variants.ApplyNow()); Assert.IsTrue(actor.activeSelf); Assert.IsTrue(wide.activeSelf);
+                variants.Variants[0].Root = wide; Assert.IsFalse(variants.ApplyNow()); Assert.IsTrue(wide.activeSelf);
+                variants.Variants[0].Root = replacement; variants.Variants[1].MinimumAspect = float.NaN; Assert.IsFalse(variants.ApplyNow());
+            }
+            finally { Object.Destroy(texture); Object.Destroy(view); Object.Destroy(actor); Object.Destroy(portrait); Object.Destroy(wide); Object.Destroy(replacement); }
+            yield return null;
+        }
         static IEnumerator Frames(int count){for(int i=0;i<count;i++)yield return null;}
     }
 }

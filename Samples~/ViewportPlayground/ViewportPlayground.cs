@@ -28,6 +28,19 @@ namespace Kruty1918.GameplayViewport.Samples
                 var renderer = block.GetComponent<MeshRenderer>();
                 if (mesh != null && BlockMaterial != null) renderer.sharedMaterial = BlockMaterial;
             }
+            var cue = new GameObject("Presentation cue", typeof(ViewportWorldAnchor), typeof(ViewportVisualScale));
+            cue.transform.SetParent(transform, false);
+            var visual = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            visual.name = "Cue visual"; visual.transform.SetParent(cue.transform, false);
+            visual.transform.localScale = Vector3.one * .3f;
+            Destroy(visual.GetComponent<BoxCollider>());
+            if (BlockMaterial != null) visual.GetComponent<MeshRenderer>().sharedMaterial = BlockMaterial;
+            var anchor = cue.GetComponent<ViewportWorldAnchor>();
+            anchor.Viewport = view.GetComponent<GameplayViewport>(); anchor.Anchor = new Vector2(.12f, .18f);
+            anchor.PlaneOrigin = transform.position; anchor.WorldOffset = Vector3.up * .3f;
+            var size = cue.GetComponent<ViewportVisualScale>(); size.Viewport = anchor.Viewport;
+            size.Visual = visual.transform; size.ReferenceLocalScale = visual.transform.localScale;
+            size.ReferenceWorldSize = .3f; size.SizeFraction = .04f;
             var sun = new GameObject("Sample sunlight",typeof(Light));sun.transform.SetParent(transform,false);
             sun.GetComponent<Light>().type=LightType.Directional;sun.transform.rotation=Quaternion.Euler(45,35,0);
         }

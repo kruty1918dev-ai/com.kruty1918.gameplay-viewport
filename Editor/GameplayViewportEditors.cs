@@ -25,6 +25,36 @@ namespace Kruty1918.GameplayViewport.Editor
                 EditorGUILayout.LabelField("Playable pixels",fit.Viewport.Frame.GameplayPixels.ToString());
         }
     }
+    [CustomEditor(typeof(ViewportVisualScale))]
+    public sealed class ViewportVisualScaleEditor : UnityEditor.Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+            var scale = (ViewportVisualScale)target;
+            if (scale.Visual == null || scale.Visual == scale.transform || scale.transform.IsChildOf(scale.Visual))
+                EditorGUILayout.HelpBox("Assign a separate visual transform. The controller/actor and its ancestors cannot be scaled by this component.", MessageType.Error);
+            else
+            {
+                if (scale.Visual.GetComponentsInChildren<Collider>(true).Length > 0)
+                    EditorGUILayout.HelpBox("This visual contains colliders. Move gameplay colliders outside it before using presentation scaling.", MessageType.Warning);
+                if (!Application.isPlaying && GUILayout.Button("Capture authored visual size"))
+                {
+                    var renderers = scale.Visual.GetComponentsInChildren<Renderer>();
+                    if (renderers.Length > 0)
+                    {
+                        var bounds = renderers[0].bounds;
+                        foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
+                        Undo.RecordObject(scale, "Capture visual reference size");
+                        scale.ReferenceLocalScale = scale.Visual.localScale;
+                        scale.ReferenceWorldSize = Mathf.Max(.0001f, bounds.size.x, bounds.size.y, bounds.size.z);
+                        EditorUtility.SetDirty(scale);
+                    }
+                }
+            }
+            EditorGUILayout.HelpBox("SizeFraction is relative to the playable span at this object's depth. Limits preserve world proportions. Keep the parent scale stable; this is presentation sizing, not a physics or touch-target policy.", MessageType.Info);
+        }
+    }
     [CustomEditor(typeof(GameplayViewport))]
     public sealed class GameplayViewportEditor : UnityEditor.Editor
     {

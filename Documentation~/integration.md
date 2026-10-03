@@ -9,12 +9,14 @@ An existing orbit/drift controller can keep ownership and use the pure fitting A
 ```csharp
 viewport.Refresh();
 var frame = viewport.Frame;
+if (frame.IsValid) camera.aspect = frame.RenderAspect; // omit when the host owns a custom aspect
 if (frame.IsValid && GameplayCameraMath.TryOrthographic(
     bounds, camera.transform.rotation, camera.aspect,
     frame.NormalizedGameplay, 20f, 1.05f, out var pose, camera.nearClipPlane))
 {
     camera.orthographicSize = pose.OrthographicSize;
     camera.transform.position = pose.Position;
+    camera.farClipPlane = Mathf.Max(camera.farClipPlane, pose.RequiredFarClip);
     // Apply your orbit/drift offset after the fitted base pose.
 }
 ```
@@ -53,3 +55,11 @@ A very large level cannot remain simultaneously readable and fully visible on ev
 Quiet Camp's `CameraFitter` is a small domain adapter: it turns a level's width/height into bounds and passes the native HUD viewport to `GameplayViewport`. Its camera fitting now uses `GameplayCameraMath` in the gameplay scene, main menu and album. The menu's drift and album's orbit retain camera ownership; their visual offsets are applied after a containing fit. The meadow and atmosphere fit to the resulting camera. Puzzle cells, tent colliders, pathfinding, generated content and saves retain their coordinates.
 
 UnityHTML remains responsible for UI layout; this package is independent and can be used in games with any presentation framework.
+
+## Keep a small world cue readable
+
+Add `ViewportVisualScale` to the actor/controller and assign only its visual child. Capture the authored size in the Inspector. Choose a fraction of the horizontal, vertical or shortest gameplay span, then bound the scale multiplier. For example, Quiet Camp's door cue has a 0.14-unit reference, 0.019 shortest-span fraction and multiplier limits 1–1.7. The tent root, door position, collider and saved cell do not change. New tents receive the same policy after placement/undo/redo, and album tents use their shared orbit camera.
+
+Use this for small landmarks, directional cues and opted-in presentation props. Keep world architecture at game-owned scale. This component does not create touch hit areas. Parent scaling/shear and occlusion need host-specific policy. Position an optional cue with ViewportWorldAnchor first; sizing runs afterward.
+
+The world-span calculation samples [Unity camera projection](https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Camera-projectionMatrix.html) at the visual depth; the gameplay frame contributes only its reserved fraction. It works in standard orthographic and perspective views without using physical device DPI.

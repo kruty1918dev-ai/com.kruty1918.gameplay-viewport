@@ -8,20 +8,20 @@ Adaptive **gameplay framing and world presentation** for Unity 6. A reusable pac
 
 Keep the important part of a level visible inside its available screen region. Fit an orthographic or perspective camera around world bounds, account for safe areas and UI reservations, and place optional visual objects using viewport anchors. The package has no dependency on Quiet Camp, HTML, Cinemachine, a render pipeline, an input backend or a platform SDK.
 
-**Current version: 0.1.0.** Unity 6000.0+; validated with Unity 6000.6.2f1. See [verification](Documentation~/verification.md) for the tested scope and hardware limits.
+**Current version: 0.2.0.** Unity 6000.0+; validated with Unity 6000.6.2f1. See [verification](Documentation~/verification.md) for the tested scope and hardware limits.
 
 ## Install
 
 Unity Package Manager → **+ → Install package from git URL**:
 
 ```text
-https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport.git#v0.1.0
+https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport.git#v0.2.0
 ```
 
 Or add to `Packages/manifest.json`:
 
 ```json
-"com.kruty1918.gameplay-viewport": "https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport.git#v0.1.0"
+"com.kruty1918.gameplay-viewport": "https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport.git#v0.2.0"
 ```
 
 Pin the full commit SHA in shipped games for reproducible builds. The runtime has no additional package dependencies. Normal Unity camera/UI engine modules must be enabled in the project.
@@ -59,6 +59,7 @@ For a scene that already owns its camera (orbit, drift, cutscenes, Cinemachine),
 | Split-screen | Each camera receives its own viewport-relative normalized region |
 | RenderTexture | Uses texture dimensions; mobile notch insets are not applied |
 | Visual world anchors | Places an opt-in visual on a plane using normalized gameplay coordinates |
+| Visual sizing | Keeps opt-in cues relative to the playable span, with authored size limits |
 | Visual variants | Chooses an opt-in visual composition by aspect range |
 | UI systems | Optional RectTransform reservation works with uGUI/UnityHTML; custom UI can use profiles or a safe-area provider |
 
@@ -73,7 +74,7 @@ Gameplay coordinates, puzzle rules, object IDs, physics and save data remain own
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 
-Import **Viewport Playground** from the Package Manager's Samples section, add `GameplayViewportPlayground` to an empty object and enter Play Mode. Resize the Game View to explore a procedural clearing and presentation anchor.
+Import **Viewport Playground** from the Package Manager's Samples section, add `ViewportPlayground` to an empty object and enter Play Mode. Resize the Game View to explore a procedural clearing and presentation anchor.
 
 ## Design choices
 
