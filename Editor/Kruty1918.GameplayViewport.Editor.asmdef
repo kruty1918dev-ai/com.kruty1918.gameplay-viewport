@@ -1,0 +1,11 @@
+{
+  "name": "Kruty1918.GameplayViewport.Editor",
+  "rootNamespace": "Kruty1918.GameplayViewport",
+  "references": [
+    "Kruty1918.GameplayViewport"
+  ],
+  "autoReferenced": true,
+  "includePlatforms": [
+    "Editor"
+  ]
+}

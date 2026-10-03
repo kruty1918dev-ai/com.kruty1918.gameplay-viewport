@@ -1,0 +1,11 @@
+{
+  "name": "Kruty1918.GameplayViewport.Tests.PlayMode",
+  "rootNamespace": "Kruty1918.GameplayViewport",
+  "references": [
+    "Kruty1918.GameplayViewport"
+  ],
+  "autoReferenced": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

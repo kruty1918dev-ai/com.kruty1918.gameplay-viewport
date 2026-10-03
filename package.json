@@ -1,0 +1,30 @@
+{
+  "name": "com.kruty1918.gameplay-viewport",
+  "version": "0.1.0",
+  "displayName": "Gameplay Viewport",
+  "description": "Adaptive gameplay framing and opt-in world composition for phones, tablets, desktop windows and console displays. Orthographic and perspective cameras, safe areas, split-screen, UI reservations and world anchors.",
+  "unity": "6000.0",
+  "keywords": [
+    "camera",
+    "responsive",
+    "viewport",
+    "mobile",
+    "tablet",
+    "console"
+  ],
+  "author": {
+    "name": "Kruty1918",
+    "url": "https://github.com/kruty1918dev-ai"
+  },
+  "license": "MIT",
+  "documentationUrl": "https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport/tree/main/Documentation~",
+  "changelogUrl": "https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/kruty1918dev-ai/com.kruty1918.gameplay-viewport/blob/main/LICENSE",
+  "samples": [
+    {
+      "displayName": "Viewport Playground",
+      "description": "Minimal procedural scene to explore camera fitting and visual anchors.",
+      "path": "Samples~/ViewportPlayground"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Kruty1918.GameplayViewport.Tests.Editor",
+  "rootNamespace": "Kruty1918.GameplayViewport",
+  "references": [
+    "Kruty1918.GameplayViewport"
+  ],
+  "autoReferenced": false,
+  "includePlatforms": [
+    "Editor"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

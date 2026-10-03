@@ -1,0 +1,11 @@
+name: Package checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate UPM layout, metadata and documentation
+        run: python3 tools/check_package.py
